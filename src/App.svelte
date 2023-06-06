@@ -4,6 +4,7 @@ import Result from "./lib/Result.svelte";
 
 let loading = false;
 let isError = false;
+let errorMessage = 'Something went wrong. Please try again later.';
 let result = {};
 let keyword = '';
 
@@ -16,6 +17,10 @@ async function getWord() {
 		const data = await response.json();
 
 		result = data[0];
+		if (!result) {
+			isError = true;
+			errorMessage = data.message;
+		}
 		loading = false;
 	} catch (error) {
 		loading = false;
@@ -35,12 +40,12 @@ async function getWord() {
 		<p class="loading">Loading...</p>
 	{/if}
 
-	{#if !loading && Object.keys(result).length > 0}
+	{#if !isError && !loading && Object.keys(result).length > 0}
 		<Result result={result} />
 	{/if}
 
 	{#if isError}
-		<p class="error">Something went wrong. Please try again later.</p>
+		<p class="error">{errorMessage}</p>
 	{/if}
 </main>
 
