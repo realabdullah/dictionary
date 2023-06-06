@@ -5,18 +5,17 @@
 	export let result = {};
 
 	let isPlaying = false;
+	let audioFile = result?.phonetics[1]?.audio ?? "";
 
 	function playAudio() {
-		const audioFile = result?.phonetics[1]?.audio ?? '';
-		if (!audioFile) return;
-		const audio = new Audio(result.phonetics[1].audio);
+		const audio = new Audio(audioFile);
+
+		audio.addEventListener("ended", () => {
+			isPlaying = false;
+		});
 
 		isPlaying = !isPlaying;
-		if (isPlaying) {
-			audio.play();
-		} else {
-			audio.pause();
-		}
+		isPlaying ? audio.play() : audio.pause();
 	}
 </script>
 
@@ -24,18 +23,20 @@
 	<div class="result-word">
 		<div class="result-word__detail">
 			<h2>{result.word}</h2>
-			<span>{result?.phonetics[1]?.text ?? ''}</span>
+			<span>{result?.phonetics[1]?.text ?? ""}</span>
 		</div>
 
-		<div class="result-word__audio">
-			<button on:click={playAudio}>
-				{#if isPlaying}
-					<img src={pauseIcon} alt="Pause" />
-				{:else}
-					<img src={playIcon} alt="Play" />
-				{/if}
-			</button>
-		</div>
+		{#if audioFile}
+			<div class="result-word__audio">
+				<button on:click={playAudio}>
+					{#if isPlaying}
+						<img src={pauseIcon} alt="Pause" />
+					{:else}
+						<img src={playIcon} alt="Play" />
+					{/if}
+				</button>
+			</div>
+		{/if}
 	</div>
 
 	{#each result.meanings as word}
@@ -49,7 +50,7 @@
 				<h5>Meaning</h5>
 
 				<ul>
-					{#each word.definitions as definition }
+					{#each word.definitions as definition}
 						<li>{definition.definition}</li>
 					{/each}
 				</ul>
@@ -58,7 +59,7 @@
 			{#if word.synonyms.length > 0}
 				<div class="synonyms">
 					<span>Synonyms</span>
-					{#each word.synonyms as synonym }
+					{#each word.synonyms as synonym}
 						<span>{synonym}</span>
 					{/each}
 				</div>
