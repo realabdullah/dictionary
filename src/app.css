@@ -1,5 +1,21 @@
+:root {
+  --white: #FFFFFF;
+  --black: #000000;
+  --fadedWhite: #aababa;
+}
+
+.dark {
+  --white: #000000;
+  --black: #FFFFFF;
+  --fadedWhite: #555555;
+}
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+body {
+  background-color: var(--white);
 }
