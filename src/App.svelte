@@ -2,16 +2,25 @@
 import Header from "./lib/Header.svelte";
 import Result from "./lib/Result.svelte";
 
+let loading = false;
+let isError = false;
 let result = {};
 let keyword = '';
 
 async function getWord() {
-	console.log("keyword", keyword);
-    const url = `https://api.dictionaryapi.dev/api/v2/entries/en/${keyword}`;
-    const response = await fetch(url);
-    const data = await response.json();
+	try {
+		isError = false;
+		loading = true;
+		const url = `https://api.dictionaryapi.dev/api/v2/entries/en/${keyword}`;
+		const response = await fetch(url);
+		const data = await response.json();
 
-	result = data[0];
+		result = data[0];
+		loading = false;
+	} catch (error) {
+		loading = false;
+		isError = true;
+	}
 }
 </script>
 
@@ -22,8 +31,16 @@ async function getWord() {
 		<input class="search" type="search" name="keyword" id="keyword" placeholder="Search..." bind:value={keyword}>
 	</form>
 
-	{#if Object.keys(result).length > 0}
+	{#if loading}
+		<p class="loading">Loading...</p>
+	{/if}
+
+	{#if !loading && Object.keys(result).length > 0}
 		<Result result={result} />
+	{/if}
+
+	{#if isError}
+		<p class="error">Something went wrong. Please try again later.</p>
 	{/if}
 </main>
 
@@ -31,7 +48,9 @@ async function getWord() {
 main {
 	width: 100%;
 	max-width: 700px;
+	min-height: 100vh;
 	margin: 60px auto;
+	position: relative;
 }
 
 .search {
@@ -44,5 +63,14 @@ main {
 	margin-top: 40px;
 	color: #000;
 	font-size: 16px;
+}
+
+.error,
+.loading {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	color: var(--black);
 }
 </style>
