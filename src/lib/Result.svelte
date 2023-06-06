@@ -5,7 +5,26 @@
 	export let result = {};
 
 	let isPlaying = false;
-	let audioFile = result?.phonetics[1]?.audio ?? "";
+	let audioFile = "";
+
+	// Get audio file
+	function getAudioFile() {
+		const audioFiles = result?.phonetics ?? [];
+
+		if (audioFiles.length <= 0) {
+			audioFile = "";
+			return;
+		}
+
+		for (const obj of audioFiles) {
+			if (obj.audio) {
+				audioFile = obj.audio;
+				break;
+			}
+		}
+	}
+
+	getAudioFile();
 
 	function playAudio() {
 		const audio = new Audio(audioFile);
